@@ -20,14 +20,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Active Events ===");
     for item in &events {
         println!(
-            "  {} — {} outcomes",
+            "  {} — {} markets",
             item.event.title,
-            item.outcomes.len()
+            item.markets.len()
         );
     }
 
     // Read the orderbook for the first outcome
-    if let Some(first) = events.first().and_then(|e| e.outcomes.first()) {
+    if let Some(first) = events.first().and_then(|e| e.markets.first()).and_then(|m| m.outcomes.first()) {
         let book = client.get_orderbook(&first.id.to_string())?;
         println!("\n=== Orderbook for {} ===", first.label);
         println!("  Best bid: {:?}", book.bids.first());
