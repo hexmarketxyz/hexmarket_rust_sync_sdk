@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // --- Public endpoints (no auth) ---
 
     // List active events
-    let events = client.list_events(&ListEventsParams {
+    let events = client.list_events(&api::ListEventsParams {
         status: Some("active".into()),
         limit: Some(5),
         ..Default::default()

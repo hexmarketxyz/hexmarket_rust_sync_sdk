@@ -24,3 +24,6 @@ bs58 = "0.5"
 ed25519-dalek = { version = "2", features = ["rand_core"] }
 rand = "0.8"
 tracing = "0.1"
+
+[dev-dependencies]
+rust_decimal_macros = "1"
