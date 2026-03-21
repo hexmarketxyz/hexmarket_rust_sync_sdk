@@ -135,4 +135,17 @@ impl HexClient {
             .call()?;
         resp.into_json::<T>().map_err(|e| HexSdkError::InvalidResponse(e.to_string()))
     }
+
+    /// Send an authenticated DELETE request with JSON body and parse response.
+    pub(crate) fn delete_auth_with_body<T: DeserializeOwned>(
+        &self,
+        path: &str,
+        body: &serde_json::Value,
+    ) -> Result<T, HexSdkError> {
+        let headers = self.l2_headers("DELETE", path, None)?;
+        let resp = headers
+            .apply(self.agent.delete(&self.url(path)))
+            .send_json(body)?;
+        resp.into_json::<T>().map_err(|e| HexSdkError::InvalidResponse(e.to_string()))
+    }
 }

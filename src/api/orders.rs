@@ -38,6 +38,36 @@ impl HexClient {
         self.delete_auth(&path)
     }
 
+    /// Place multiple orders in a single batch (requires L2 auth).
+    /// All orders must belong to the same market.
+    pub fn batch_place_orders(
+        &self,
+        market_id: &str,
+        orders: &[PlaceOrderParams],
+    ) -> Result<serde_json::Value, HexSdkError> {
+        let path = "/api/v1/orders/batch";
+        let body = serde_json::json!({
+            "market_id": market_id,
+            "orders": orders,
+        });
+        self.post_auth(path, &body)
+    }
+
+    /// Cancel multiple orders in a single batch (requires L2 auth).
+    /// All orders must belong to the same market.
+    pub fn batch_cancel_orders(
+        &self,
+        market_id: &str,
+        order_ids: &[&str],
+    ) -> Result<serde_json::Value, HexSdkError> {
+        let path = "/api/v1/orders/batch";
+        let body = serde_json::json!({
+            "market_id": market_id,
+            "order_ids": order_ids,
+        });
+        self.delete_auth_with_body(path, &body)
+    }
+
     /// List open orders for the authenticated user (requires L2 auth).
     pub fn get_open_orders(
         &self,
