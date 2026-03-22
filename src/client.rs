@@ -124,6 +124,19 @@ impl HexClient {
         resp.into_json::<T>().map_err(|e| HexSdkError::InvalidResponse(e.to_string()))
     }
 
+    /// Send an authenticated PUT request with JSON body and parse response.
+    pub(crate) fn put_auth<T: DeserializeOwned>(
+        &self,
+        path: &str,
+        body: &serde_json::Value,
+    ) -> Result<T, HexSdkError> {
+        let headers = self.l2_headers("PUT", path, None)?;
+        let resp = headers
+            .apply(self.agent.put(&self.url(path)))
+            .send_json(body)?;
+        resp.into_json::<T>().map_err(|e| HexSdkError::InvalidResponse(e.to_string()))
+    }
+
     /// Send an authenticated DELETE request and parse response.
     pub(crate) fn delete_auth<T: DeserializeOwned>(
         &self,

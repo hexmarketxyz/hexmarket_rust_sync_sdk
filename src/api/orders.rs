@@ -1,8 +1,8 @@
 use crate::client::HexClient;
 use crate::error::HexSdkError;
 use crate::types::{
-    BatchCancelResponse, BatchPlaceResponse, CancelAllOrdersResponse, CancelOrderResponse, Order,
-    PlaceOrderParams, PlaceOrderResponse,
+    BatchCancelResponse, BatchPlaceResponse, BatchUpdateResponse, CancelAllOrdersResponse,
+    CancelOrderResponse, Order, PlaceOrderParams, PlaceOrderResponse,
 };
 
 impl HexClient {
@@ -84,6 +84,27 @@ impl HexClient {
             "client_order_ids": client_order_ids,
         });
         self.delete_auth_with_body(path, &body)
+    }
+
+    /// Batch update: cancel orders then place new orders in a single request (requires L2 auth).
+    /// All orders must belong to the same market.
+    pub fn batch_update_orders(
+        &self,
+        market_id: &str,
+        cancel_order_ids: &[&str],
+        place_orders: &[PlaceOrderParams],
+        cancel_client_order_ids: Option<&[&str]>,
+    ) -> Result<BatchUpdateResponse, HexSdkError> {
+        let path = "/api/v1/orders/batch";
+        let mut body = serde_json::json!({
+            "market_id": market_id,
+            "cancel_order_ids": cancel_order_ids,
+            "place_orders": place_orders,
+        });
+        if let Some(ids) = cancel_client_order_ids {
+            body["cancel_client_order_ids"] = serde_json::json!(ids);
+        }
+        self.put_auth(path, &body)
     }
 
     /// List open orders for the authenticated user (requires L2 auth).
